@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+
+    <title>Admin Login</title>
+
+    <style>
+
+        :root {
+
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+            color: #000;
+
+            background-color: #f5f5f5;
+
+        }
+
+        * { box-sizing: border-box; }
+
+
+
+        body {
+
+            margin: 0;
+
+            min-height: 100vh;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            padding: 16px;
+
+        }
+
+
+
+        .shell {
+
+            background: #fff;
+
+            border: 1px solid #000;
+
+            border-radius: 18px;
+
+            padding: 28px 32px 32px;
+
+            width: 100%;
+
+            max-width: 420px;
+
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+
+        }
+
+
+
+        .header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 28px;
+
+        }
+
+
+
+        .title-block h1 {
+
+            margin: 0;
+
+            font-size: 18px;
+
+            letter-spacing: 0.12em;
+
+            text-transform: uppercase;
+
+        }
+
+
+
+        .logo-placeholder {
+
+            width: 96px;
+
+            height: 40px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+        }
+
+
+
+        .logo-placeholder img {
+
+            max-height: 38px;
+
+            max-width: 100%;
+
+            object-fit: contain;
+
+        }
+
+
+
+        .form-group {
+
+            margin-bottom: 14px;
+
+        }
+
+
+
+        label {
+
+            display: block;
+
+            font-size: 12px;
+
+            margin-bottom: 4px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.08em;
+
+        }
+
+
+
+        input {
+
+            width: 100%;
+
+            padding: 10px 12px;
+
+            border: 1px solid #000;
+
+            border-radius: 8px;
+
+            font-size: 14px;
+
+        }
+
+
+
+        .btn {
+
+            width: 100%;
+
+            margin-top: 16px;
+
+            border-radius: 999px;
+
+            border: 1px solid #000;
+
+            background: #000;
+
+            color: #fff;
+
+            padding: 10px 16px;
+
+            cursor: pointer;
+
+            font-size: 12px;
+
+            letter-spacing: 0.12em;
+
+            text-transform: uppercase;
+
+        }
+
+
+
+        .error {
+
+            margin-top: 12px;
+
+            font-size: 12px;
+
+            color: #b00020;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="shell">
+
+    <header class="header">
+
+        <div class="title-block">
+
+            <h1>Admin Login</h1>
+
+        </div>
+
+        <div class="logo-placeholder">
+
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+
+        </div>
+
+    </header>
+
+
+
+    <form method="post">
+
+        <div class="form-group">
+
+            <label for="username">Username</label>
+
+            <input required id="username" name="username" autocomplete="username">
+
+        </div>
+
+
+
+        <div class="form-group">
+
+            <label for="password">Password</label>
+
+            <input required id="password" name="password" type="password" autocomplete="current-password">
+
+        </div>
+
+
+
+        <button class="btn" type="submit">Sign In</button>
+
+
+
+        {% if error %}
+
+        <div class="error">{{ error }}</div>
+
+        {% endif %}
+
+    </form>
+
+</div>
+
+
+
+<script>
+
+let inactivityTimer;
+
+
+
+function resetInactivityTimer() {
+
+    clearTimeout(inactivityTimer);
+
+    inactivityTimer = setTimeout(() => {
+
+        window.location.href = "/logout";
+
+    }, 15 * 60 * 1000);
+
+}
+
+
+
+document.addEventListener("mousemove", resetInactivityTimer);
+
+document.addEventListener("keydown", resetInactivityTimer);
+
+document.addEventListener("click", resetInactivityTimer);
+
+document.addEventListener("scroll", resetInactivityTimer);
+
+
+
+resetInactivityTimer();
+
+</script>
+
+</body>
+
+</html>

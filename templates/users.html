@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+
+    <title>Admin – Users</title>
+
+    <style>
+
+        :root {
+
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+            color: #000;
+
+            background-color: #f5f5f5;
+
+        }
+
+        * { box-sizing: border-box; }
+
+
+
+        body {
+
+            margin: 0;
+
+            min-height: 100vh;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: flex-start;
+
+            padding: 40px 16px;
+
+        }
+
+
+
+        .shell {
+
+            background: #fff;
+
+            border: 1px solid #000;
+
+            border-radius: 18px;
+
+            padding: 24px 28px 28px;
+
+            width: 100%;
+
+            max-width: 900px;
+
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+
+        }
+
+
+
+        .header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 24px;
+
+        }
+
+
+
+        .title-block h1 {
+
+            margin: 0;
+
+            font-size: 20px;
+
+            letter-spacing: 0.12em;
+
+            text-transform: uppercase;
+
+        }
+
+
+
+        .logo-placeholder {
+
+            width: 96px;
+
+            height: 40px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+        }
+
+        .logo-placeholder img {
+
+            max-height: 38px;
+
+            max-width: 100%;
+
+            object-fit: contain;
+
+        }
+
+
+
+        .top-links {
+
+            font-size: 11px;
+
+            margin-bottom: 16px;
+
+        }
+
+        .top-links a {
+
+            margin-right: 12px;
+
+            text-decoration: none;
+
+            color: #000;
+
+            border-bottom: 1px solid transparent;
+
+        }
+
+        .top-links a:hover {
+
+            border-bottom-color: #000;
+
+        }
+
+
+
+        .form-row {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 8px;
+
+            margin-bottom: 20px;
+
+        }
+
+        .form-row input, .form-row select {
+
+            padding: 8px 10px;
+
+            border: 1px solid #000;
+
+            border-radius: 8px;
+
+            font-size: 12px;
+
+        }
+
+
+
+        .btn {
+
+            border-radius: 999px;
+
+            border: 1px solid #000;
+
+            background: #000;
+
+            color: #fff;
+
+            padding: 8px 16px;
+
+            cursor: pointer;
+
+            font-size: 11px;
+
+            letter-spacing: 0.12em;
+
+            text-transform: uppercase;
+
+        }
+
+
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            font-size: 12px;
+
+        }
+
+        th, td {
+
+            border: 1px solid #000;
+
+            padding: 8px 10px;
+
+        }
+
+        th {
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.08em;
+
+            background: #fafafa;
+
+        }
+
+
+
+        @media (max-width: 600px) {
+
+            body { padding: 16px; }
+
+            .shell { padding: 16px; border-radius: 12px; }
+
+            .form-row { flex-direction: column; }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="shell">
+
+    <header class="header">
+
+        <div class="title-block">
+
+            <h1>Admin – Users</h1>
+
+        </div>
+
+        <div class="logo-placeholder">
+
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+
+        </div>
+
+    </header>
+
+
+
+    <div class="top-links">
+
+        <a href="{{ url_for('panel') }}">Back to panel</a>
+
+        <a href="{{ url_for('logout') }}">Logout</a>
+
+    </div>
+
+
+
+    <!-- Add user -->
+
+    <form method="post" class="form-row">
+
+        <input name="username" placeholder="New username" required>
+
+        <input name="password" type="password" placeholder="Password" required>
+
+        <select name="role">
+
+            <option value="user">user</option>
+
+            <option value="superadmin">superadmin</option>
+
+        </select>
+
+        <button class="btn" type="submit">Add user</button>
+
+    </form>
+
+
+
+    <!-- Existing users -->
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>ID</th>
+
+                <th>Username</th>
+
+                <th>Role</th>
+
+                <th>Actions</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% for u in users %}
+
+            <tr>
+
+                <td>{{ u.id }}</td>
+
+                <td>{{ u.username }}</td>
+
+                <td>{{ u.role }}</td>
+
+                <td>
+
+                    {% if u.role != 'superadmin' %}
+
+                    <form method="post" style="margin:0;" onsubmit="return confirm('Remove this user?');">
+
+                        <input type="hidden" name="delete_id" value="{{ u.id }}">
+
+                        <button class="btn" type="submit">Remove</button>
+
+                    </form>
+
+                    {% else %}
+
+                    <!-- superadmin cannot be removed -->
+
+                    {% endif %}
+
+                </td>
+
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+
+<!-- Inactivity logout (client-side safety net) -->
+
+<script>
+
+let inactivityTimer;
+
+
+
+function resetInactivityTimer() {
+
+    clearTimeout(inactivityTimer);
+
+    inactivityTimer = setTimeout(() => {
+
+        window.location.href = "/logout";
+
+    }, 15 * 60 * 1000); // 15 minutes
+
+}
+
+
+
+document.addEventListener("mousemove", resetInactivityTimer);
+
+document.addEventListener("keydown", resetInactivityTimer);
+
+document.addEventListener("click", resetInactivityTimer);
+
+document.addEventListener("scroll", resetInactivityTimer);
+
+
+
+// Start timer
+
+resetInactivityTimer();
+
+</script>
+
+</body>
+
+</html>
